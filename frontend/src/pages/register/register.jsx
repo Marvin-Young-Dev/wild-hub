@@ -22,7 +22,7 @@ function Register() {
     } 
 
     try {
-      await axios.post("http://localhost:9000/users", { username, password });
+      await axios.post("http://localhost:9000api/users", { username, password });
       alert("Registration was Successful")
       navigate("/");
     } catch (error) {
