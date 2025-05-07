@@ -14,6 +14,10 @@ app.use(express.json());
 const authRoutes = require("./routes/auth");
 app.use("/api", authRoutes);
 
+// Raw Aram
+const rawAramRoute = require("./routes/rawAram");
+app.use("/api", rawAramRoute);
+
 // Serverstart
 app.listen(port, () => {
   console.log(`Server läuft auf Port ${port}`);
