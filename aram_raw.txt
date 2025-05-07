@@ -1,0 +1,35 @@
+-- SQLite
+CREATE TABLE aram_raw (
+    aram_raw_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    aram_raw_date DATE,
+    user_id INTEGER,
+    aram_raw_prov BOOLEAN DEFAULT FALSE,
+    aram_raw_ref VARCHAR(255),
+    aram_raw_win_team TEXT,
+    aram_raw_lose_team TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+INSERT INTO aram_raw (
+    aram_raw_date,
+    user_id,
+    aram_raw_prov,
+    aram_raw_ref,
+    aram_raw_win_team,
+    aram_raw_lose_team
+) VALUES (
+    '2025-05-06',
+    2,
+    FALSE,
+    'by admin KeinAsimoYT',
+    'Garen,Lissandra,Orianna,Heimerdinger,Vayne',
+    'Janna,Orn,Thresh,Miss Fortune,Veigar'
+);
+
+DROP TABLE aram_raw;
+
+UPDATE aram_raw
+SET
+    aram_raw_win_team = 'Janna,Orn,Thresh,Miss Fortune,Veigar',
+    aram_raw_lose_team = 'Garen,Lissandra,Orianna,Heimerdinger,Vayne'
+WHERE aram_raw_id = 1;
