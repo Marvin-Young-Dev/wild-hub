@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
     if (storedToken !== token) {
       setToken(storedToken);
     }
-  }, []);
+  }, [token]);
 
   const login = (newToken) => {
     localStorage.setItem('jwt_token', newToken);
