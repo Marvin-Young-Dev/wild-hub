@@ -1,0 +1,224 @@
+-- Benutzer & Profil
+CREATE TABLE IF NOT EXISTS user (
+    user_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    social_score INTEGER NOT NULL DEFAULT 100,      -- Sozialverhalten-Score, Standard 100
+    is_banned INTEGER NOT NULL DEFAULT 0,           -- Bann-Status: 0 = nicht gebannt, 1 = gebannt
+    ban_reason TEXT DEFAULT NULL,                   -- Grund für Bann
+    ban_until TIMESTAMP DEFAULT NULL,               -- Bann läuft bis Zeitpunkt
+    PRIMARY KEY (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS profile (
+    profile_id INTEGER NOT NULL,
+    user_image TEXT NOT NULL DEFAULT "",
+    user_border TEXT NOT NULL DEFAULT "",
+    user_rank TEXT NOT NULL DEFAULT "Bronce",
+    user_points INTEGER NOT NULL DEFAULT 0,
+    user_cores INTEGER NOT NULL DEFAULT 0,
+    user_role TEXT NOT NULL DEFAULT 'User',
+    badge_verify INTEGER NOT NULL DEFAULT 0,
+    badge_sozial TEXT DEFAULT '',
+    PRIMARY KEY (profile_id),
+    FOREIGN KEY (profile_id) REFERENCES user(user_id)
+);
+
+-- Nutzer-Titel (mehrere Titel pro Nutzer, jeweils mit aktiv-Flag)
+CREATE TABLE IF NOT EXISTS user_titles (
+    user_title_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    title_name TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 0,  -- 1 = aktiv, 0 = inaktiv (nur 1 aktiv pro Nutzer)
+    obtained_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Soziale Verbindungen & Kosmetik
+CREATE TABLE IF NOT EXISTS user_sozial (
+    user_sozial_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    sozial_name TEXT NOT NULL,        -- z.B. Discord, Twitch, Twitter – Plattform oder Sozialer Accountname
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+CREATE TABLE IF NOT EXISTS user_border (
+    user_border_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    border_name TEXT NOT NULL,        -- Kosmetischer Rahmen-Name
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Helden mit Mastery-Level
+CREATE TABLE IF NOT EXISTS user_heros (
+    user_hero_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    hero_name TEXT NOT NULL,
+    mastery_level INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Skins mit Aktiv-Status
+CREATE TABLE IF NOT EXISTS user_skins (
+    user_skin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    champion_name TEXT NOT NULL,
+    skin_name TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Alle möglichen Achievements
+CREATE TABLE IF NOT EXISTS user_achievements (
+    user_achievement_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    achievement_name TEXT NOT NULL DEFAULT "Join the WildHub",
+    achievement_description TEXT NOT NULL DEFAULT "Joins the Community",
+    achievement_image TEXT NOT NULL DEFAULT "",
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Vom Nutzer erreichte Achievements
+CREATE TABLE IF NOT EXISTS user_achievements_earned (
+    user_achievement_earned_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    achievement_name TEXT NOT NULL,
+    achievement_description TEXT NOT NULL,
+    achievement_image TEXT NOT NULL,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Messaging-System (Threads & Nachrichten)
+CREATE TABLE IF NOT EXISTS user_message_threads (
+    thread_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user1_id INTEGER NOT NULL,
+    user2_id INTEGER NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user1_id) REFERENCES user(user_id),
+    FOREIGN KEY (user2_id) REFERENCES user(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS user_messages (
+    message_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    is_read INTEGER NOT NULL DEFAULT 0,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES user(user_id),
+    FOREIGN KEY (receiver_id) REFERENCES user(user_id)
+);
+
+-- Freundes-/Kontakt-System
+CREATE TABLE IF NOT EXISTS user_friends (
+    friend_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    requester_id INTEGER NOT NULL,
+    addressee_id INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'accepted', 'declined'
+    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (requester_id) REFERENCES user(user_id),
+    FOREIGN KEY (addressee_id) REFERENCES user(user_id)
+);
+
+-- Forum-Kategorien, Threads & Kommentare
+CREATE TABLE IF NOT EXISTS forum_categories (
+    category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS forum_threads (
+    thread_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id),
+    FOREIGN KEY (category_id) REFERENCES forum_categories(category_id)
+);
+
+CREATE TABLE IF NOT EXISTS forum_comments (
+    comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    thread_id INTEGER NOT NULL,
+    profile_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (thread_id) REFERENCES forum_threads(thread_id),
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Melde-/Report-System für Threads & Kommentare
+CREATE TABLE IF NOT EXISTS forum_reports (
+    report_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reporter_id INTEGER NOT NULL,
+    target_type TEXT NOT NULL,    -- "thread" oder "comment"
+    target_id INTEGER NOT NULL,   -- ID des gemeldeten Threads oder Kommentars
+    reason TEXT NOT NULL,
+    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (reporter_id) REFERENCES user(user_id)
+);
+
+-- Gamification: Tägliche Login-Belohnung & Quests
+CREATE TABLE IF NOT EXISTS user_daily_login (
+    login_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    login_date DATE NOT NULL,
+    reward_collected INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+CREATE TABLE IF NOT EXISTS user_quests (
+    quest_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    quest_name TEXT NOT NULL,
+    is_completed INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Benachrichtigungen
+CREATE TABLE IF NOT EXISTS user_notifications (
+    notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    content TEXT NOT NULL,
+    is_read INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Uploads / Medien
+CREATE TABLE IF NOT EXISTS user_uploads (
+    upload_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL,
+    file_path TEXT NOT NULL,
+    file_type TEXT NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (profile_id) REFERENCES profile(profile_id)
+);
+
+-- Aram Matches Rohdaten
+CREATE TABLE IF NOT EXISTS aram_raw (
+    aram_match_id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    aram_blue_team TEXT NOT NULL,
+    aram_red_team TEXT NOT NULL,
+    aram_winner TEXT NOT NULL,
+    aram_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
+
+-- Ranked Matches Rohdaten
+CREATE TABLE IF NOT EXISTS ranked_raw (
+    ranked_match_id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    ranked_bans TEXT NOT NULL,
+    ranked_blue_team TEXT NOT NULL,
+    ranked_red_team TEXT NOT NULL,
+    ranked_winner TEXT NOT NULL,
+    ranked_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+);

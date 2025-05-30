@@ -1,0 +1,54 @@
+CREATE TABLE IF NOT EXISTS aram_finals (
+    aram_match_id INTEGER PRIMARY KEY,
+    aram_blue_team text NOT NULL,
+    aram_red_team text NOT NULL,
+    aram_winner text NOT NULL,
+    aram_date date NOT NULL
+);
+
+insert into aram_finals (aram_blue_team, aram_red_team, aram_winner, aram_date) values 
+("Caitlyn,Miss Fortune,Gragas,Janna,Jhin",
+"Amumu,Ryze,Seraphine,Galio,Twitch",
+"Blue",
+"29-05-2025"),
+("Twisted Fate,Fiddlesticks,Irelia,Diana,Samira",
+"Corki,Akali,Lucian,Brand,Zyra",
+"Red",
+"29-05-2025"),
+("Blitzcrank,Fiddlesticks,Annie,Swain,Yone",
+"Darius,Jhin,Corki,Thresh,Leona",
+"Red",
+"29-05-2025"),
+("Lux,Malphite,Senna,Ashe,Master Yi",
+"Wukong,Veigar,Twitch,Samira,Jinx",
+"Blue",
+"29-05-2025"),
+("Blitzcrank,Zoe,Lux,Pyke,Caitlyn",
+"Irelia,Lissandra,Galio,Master Yi,Veigar",
+"Red",
+"29-05-2025"),
+("Miss Fortune,Leona,Amumu,Lucian,Ashe",
+"Lulu,Poppy,Twisted Fate,Jinx,Dr. Mundo",
+"Blue",
+"29-05-2025")
+;
+
+UPDATE aram_finals
+SET
+    aram_blue_team = REPLACE(aram_blue_team, 'Makkai', 'Maokai'),
+    aram_red_team = REPLACE(aram_red_team, 'Makkai', 'Maokai')
+WHERE
+    aram_blue_team LIKE '%Makkai%'
+    OR aram_red_team LIKE '%Makkai%';
+
+
+UPDATE aram_finals
+SET aram_date = '29-05-2025'
+WHERE aram_date LIKE '%30-05-2025%';
+
+
+-- Ich möchte nur das datum bei ID 1 Ändern
+UPDATE aram_finals
+SET aram_date = '30-05-2025'
+WHERE aram_match_id = 1;
+

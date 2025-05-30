@@ -1,0 +1,25 @@
+CREATE TABLE IF NOT EXISTS ranked_finals (
+    ranked_match_id INTEGER PRIMARY KEY,
+    ranked_bans text NOT NULL,
+    ranked_blue_team text NOT NULL,
+    ranked_red_team text NOT NULL,
+    ranked_winner text NOT NULL,
+    ranked_date date NOT NULL
+);
+
+insert into ranked_finals (ranked_bans, ranked_blue_team, ranked_red_team, ranked_winner, ranked_date) values 
+('Aatrox,Ryze,Nocturne,Vladimir,Lux,Pyke,Amumu,Vi,Nocturne,Yuumi,Vi,Nocturne,Yuumi', 
+'Yone,Zed,Lissandra,Senna,Seraphine', 'Nasus,Lillia,Corki,Caitlyn,Lulu', 'Red', '2025-05-28');
+
+CREATE TABLE IF NOT EXISTS ranked_finals (
+    ranked_match_id INTEGER PRIMARY KEY,
+    ranked_bans text NOT NULL,
+    ranked_blue_team text NOT NULL,
+    ranked_red_team text NOT NULL,
+    ranked_winner text NOT NULL,
+    ranked_date date NOT NULL
+);
+
+insert into ranked_finals (ranked_bans, ranked_blue_team, ranked_red_team, ranked_winner, ranked_date) values 
+('Aatrox,Ryze,Nocturne,Vladimir,Lux,Pyke,Amumu,Vi,Nocturne,Yuumi,Vi,Nocturne,Yuumi', 
+'Yone,Zed,Lissandra,Senna,Seraphine', 'Nasus,Lillia,Corki,Caitlyn,Lulu', 'Red', '2025-05-28');
