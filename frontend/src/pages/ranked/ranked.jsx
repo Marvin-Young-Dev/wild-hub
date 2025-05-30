@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Typography, Box, TableSortLabel, Tooltip
+  Paper, Typography, Box, TableSortLabel, Tooltip,
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
 
 function Ranked() {
   const navigate = useNavigate();
@@ -14,23 +14,31 @@ function Ranked() {
   const [orderBy, setOrderBy] = useState('picks');
   const [order, setOrder] = useState('desc');
 
+  // States für das Popup zur Namenskorrektur
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedName, setSelectedName] = useState('');
+  const [newName, setNewName] = useState('');
+
+  const link = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem("jwt_token");
 
     axios.get('http://localhost:9000/api/ranked_matches', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => {
-      setTotalMatches(res.data.length);
-      processStats(res.data);
-    })
-    .catch(error => {
-      if (error.response.status === 403) {
-        navigate("/login");
-      }
-    })
-    .catch(err => console.error("Fehler beim Laden:", err));
-  }, []);
+      .then(res => {
+        setTotalMatches(res.data.length);
+        processStats(res.data);
+      })
+      .catch(error => {
+        if (error.response?.status === 403) {
+          navigate("/login");
+        } else {
+          console.error("Fehler beim Laden:", error);
+        }
+      });
+  }, [navigate]);
 
   const processStats = (matches) => {
     const data = {};
@@ -74,22 +82,59 @@ function Ranked() {
     }
   };
 
+  // Popup-Dialog-Funktionen
+  const handleOpenDialog = (champ) => {
+    setSelectedName(champ);
+    setNewName(champ);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedName('');
+    setNewName('');
+  };
+
+  const handleNameCorrection = () => {
+    const token = localStorage.getItem("jwt_token");
+    axios.post('http://localhost:9000/api/ranked_name_correction', {
+      fromName: selectedName,
+      toName: newName
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(() => {
+      setOpenDialog(false);
+      window.location.reload(); // Alternativ: Stats neu laden ohne reload
+    }).catch(err => {
+      console.error("Fehler bei Namenskorrektur:", err);
+    });
+  };
+
   const sortedStats = Object.entries(stats).sort(([, a], [, b]) => {
     const valA = orderBy === 'winrate' ? a.wins / (a.picks || 1) :
-                 orderBy === 'pickrate' ? a.picks :
-                 orderBy === 'banrate' ? a.bans :
-                 a[orderBy];
+      orderBy === 'pickrate' ? a.picks :
+        orderBy === 'banrate' ? a.bans :
+          a[orderBy];
     const valB = orderBy === 'winrate' ? b.wins / (b.picks || 1) :
-                 orderBy === 'pickrate' ? b.picks :
-                 orderBy === 'banrate' ? b.bans :
-                 b[orderBy];
+      orderBy === 'pickrate' ? b.picks :
+        orderBy === 'banrate' ? b.bans :
+          b[orderBy];
 
     return order === 'asc' ? valA - valB : valB - valA;
   });
 
   return (
     <div style={{ padding: '2rem' }}>
-      <Typography variant="h4" gutterBottom>Ranked Champion Stats : Current Matches <span style={{ color: "#F00" , textDecoration: "underline"}}>{totalMatches}</span> inside the database</Typography>
+      <Typography variant="h4" gutterBottom>
+        Ranked Champion Stats : Current Matches <span style={{ color: "#F00", textDecoration: "underline" }}>{totalMatches}</span> inside the database
+      </Typography>
+      <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+        <Table>
+          <button variant="contained" color="primary" onClick={() => link('/ranked/supportranked')}>
+            Import Data
+          </button>
+        </Table>
+      </Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -126,7 +171,13 @@ function Ranked() {
                           style={{ width: 40, height: 40, marginRight: 16, borderRadius: 8 }}
                         />
                       )}
-                      {champ}
+                      <span
+                        onClick={() => handleOpenDialog(champ)}
+                        style={{ cursor: 'pointer', textDecoration: 'underline', color: '#1976d2' }}
+                        title="Name korrigieren"
+                      >
+                        {champ}
+                      </span>
                     </Box>
                   </TableCell>
                   <TableCell align="right">{picks}</TableCell>
@@ -144,6 +195,27 @@ function Ranked() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Popup zur Namenskorrektur */}
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Champion-Namen korrigieren</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Neuer Name"
+            fullWidth
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Abbrechen</Button>
+          <Button onClick={handleNameCorrection} variant="contained" color="primary">
+            Speichern
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

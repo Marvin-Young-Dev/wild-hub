@@ -5,7 +5,7 @@
         return (
             <div className="error-page">
                 <video autoPlay muted loop className="background-video">
-                    <source src={require('../../assets/backgrounds/error2.mp4')} type="video/mp4" />
+                    <source src="/assets/backgrounds/error2.mp4" type="video/mp4" />
                     Dein Browser unterstützt kein HTML5-Video.
                 </video>
                 <div className="content">

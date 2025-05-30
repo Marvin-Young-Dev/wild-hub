@@ -130,6 +130,11 @@ CREATE TABLE IF NOT EXISTS forum_categories (
     description TEXT
 );
 
+CREATE TABLE champions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS forum_threads (
     thread_id INTEGER PRIMARY KEY AUTOINCREMENT,
     profile_id INTEGER NOT NULL,
@@ -222,3 +227,23 @@ CREATE TABLE IF NOT EXISTS ranked_raw (
     ranked_date DATE NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
+
+-- Aram Matches Finaldaten
+CREATE TABLE IF NOT EXISTS aram_finals (
+    aram_match_id INTEGER PRIMARY KEY,
+    aram_blue_team TEXT NOT NULL,
+    aram_red_team TEXT NOT NULL,
+    aram_winner TEXT NOT NULL,
+    aram_date DATE NOT NULL,
+);
+
+-- Ranked Matches Finaldaten
+CREATE TABLE IF NOT EXISTS ranked_finals (
+    ranked_match_id INTEGER PRIMARY KEY,
+    ranked_bans TEXT NOT NULL,
+    ranked_blue_team TEXT NOT NULL,
+    ranked_red_team TEXT NOT NULL,
+    ranked_winner TEXT NOT NULL,
+    ranked_date DATE NOT NULL,
+);
+

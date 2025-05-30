@@ -3,19 +3,6 @@ const router = express.Router();
 const db = require("../db");
 const auth = require("../middleware/auth");
 
-router.post("/ranked", auth, (req, res) => {
-    const user_id = req.user.id;
-    const { ranked_date, ranked_prov, ranked_ref, ranked_win_team, ranked_lose_team } = req.body;
-
-    db.run(
-        "INSERT INTO ranked (ranked_date, user_id, ranked_prov, ranked_ref, ranked_win_team, ranked_lose_team) VALUES (?, ?, ?, ?, ?, ?)",
-        [ranked_date, user_id, ranked_prov, ranked_ref, ranked_win_team, ranked_lose_team],
-        (err) => {
-            if (err) return res.status(500).send("Something went wrong . Please try again");
-            res.status(201).send("Thank you for your help");
-        }
-    );
-});
 
 // gebe alle ranked matches aus die in der db sind ranked_matches
 // Route http://localhost:9000/api/ranked_matches
@@ -28,6 +15,36 @@ router.get("/ranked_matches", auth, (req, res) => {
     });
 });
 
+router.post("/ranked_name_correction", auth, (req, res) => {
+    const { fromName, toName } = req.body;
+  
+    if (!fromName || !toName) {
+      return res.status(400).send("Bitte alte und neue Namen angeben");
+    }
+  
+    const sql = `
+      UPDATE ranked_finals
+      SET
+        ranked_bans = REPLACE(ranked_bans, ?, ?),
+        ranked_blue_team = REPLACE(ranked_blue_team, ?, ?),
+        ranked_red_team = REPLACE(ranked_red_team, ?, ?)
+      WHERE
+        ranked_bans LIKE '%' || ? || '%'
+        OR ranked_blue_team LIKE '%' || ? || '%'
+        OR ranked_red_team LIKE '%' || ? || '%'
+    `;
+  
+    const params = [fromName, toName, fromName, toName, fromName, toName, fromName, fromName, fromName];
+  
+    db.run(sql, params, function(err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Fehler bei der Namenskorrektur");
+      }
+      res.status(200).send(`Alle Vorkommen von "${fromName}" wurden zu "${toName}" geändert.`);
+    });
+  });
+  
 
 
 

@@ -22,6 +22,7 @@ import Error4 from "./pages/error/error4";
 
 // Ranked
 import Ranked from "./pages/ranked/ranked";
+import SupportRanked from "./pages/ranked/supportranked/supportranked";
 
 // Aram
 import Aram from "./pages/aram/aram";
@@ -35,7 +36,6 @@ import HelpUs from "./pages/helpUs/helpUs";
 // WildHub
 import WildHub from "./pages/wildhub/wildhub";
 import HallOfFame from "./pages/wildhub/halloffame/halloffame";
-import HelpUsRanked from "./pages/wildhub/helpusranked/helpusranked";
 
 const RandomError = () => {
   const errors = [<Error1 />, <Error2 />, <Error3 />, <Error4 />];
@@ -57,11 +57,11 @@ root.render(
           <Route path="/donald" element={<Donald />} />
           <Route path="/aram" element={<Aram />} />
           <Route path="/ranked" element={<Ranked />} />
+          <Route path="/ranked/supportranked" element={<SupportRanked />} />
           <Route path="/minigame" element={<MiniGameHome />} />
           <Route path="/helpUs" element={<HelpUs />} />
           <Route path="/wildhub" element={<WildHub />} />
           <Route path="/wildhub/halloffame/halloffame" element={<HallOfFame />} />
-          <Route path="/wildhub/helpusranked/helpusranked" element={<HelpUsRanked />} />
           <Route path="/wildhub/whpatchnotes/whpatchnotes" element={<WhPatchnotes />} />
           <Route path="/*" element={<RandomError />} />
         </Routes>

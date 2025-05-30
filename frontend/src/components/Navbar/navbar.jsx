@@ -13,8 +13,6 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContex/AuthContex";
-import settingsImage from "../../assets/logo/Jax_ShanHaiScrollsCircle_WR.png";
-import logo from "../../assets/logo/1920px-Jax_ShanHaiScrollsSkin_WR.jpg";
 import "./navbar.css";
 
 function Navbar() {
@@ -55,7 +53,7 @@ function Navbar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <img
-            src={logo}
+            src="/assets/logo/1920px-Jax_ShanHaiScrollsSkin_WR.jpg"
             alt="Logo"
             onClick={() => navigate("/")}
             className="navbar-logo-desktop"
@@ -67,7 +65,7 @@ function Navbar() {
             }}
           />
           <img
-            src={logo}
+            src="/assets/logo/1920px-Jax_ShanHaiScrollsSkin_WR.jpg"
             alt="Logo"
             onClick={() => navigate("/")}
             className="navbar-logo-mobile"
@@ -142,8 +140,8 @@ function Navbar() {
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
-                      alt="Remy Sharp"
-                      src={settingsImage}
+                      alt="Settings"
+                      src="/assets/logo/Jax_ShanHaiScrollsCircle_WR.png"
                       sx={{ width: "30px", height: "30px" }}
                     />
                   </IconButton>
@@ -164,7 +162,6 @@ function Navbar() {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-
                   <MenuItem
                     key="Logout"
                     onClick={() => {

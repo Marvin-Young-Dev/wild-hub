@@ -5,8 +5,8 @@ function Error4() {
   return (
     <div className="error-page">
       <video autoPlay muted loop className="background-video">
-        <source src={require('../../assets/backgrounds/error4.mp4')} type="video/mp4" />
-        Your browser does not support HTML5 video.
+        <source src="/assets/backgrounds/error4.mp4" type="video/mp4" />
+        Dein Browser unterstützt kein HTML5-Video.
       </video>
       <div className="content">
         <h1>404</h1>

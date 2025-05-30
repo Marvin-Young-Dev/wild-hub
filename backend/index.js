@@ -30,6 +30,10 @@ app.use("/api", rawAramRoute);
 const aramRoute = require("./routes/aram");
 app.use("/api", aramRoute);
 
+// Champs
+const champsRoute = require("./routes/champs");
+app.use("/api", champsRoute);
+
 // Serverstart
 app.listen(port, () => {
   console.log(`Server läuft auf Port ${port}`);

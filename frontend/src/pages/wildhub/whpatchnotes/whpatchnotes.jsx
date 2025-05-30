@@ -43,7 +43,7 @@ const WhPatchnotes = () => {
       {/* Neuester Patch */}
       <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" fontWeight="bold" gutterBottom>
-          Beta 0.7.20 KW22
+          Beta 0.7.17 KW22
         </Typography>
 
         <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>

@@ -7,7 +7,6 @@ function WildHub() {
 
   const menuItems = [
     { label: 'Wildhub Patchnotes', path: '/wildhub/whPatchnotes/whpatchnotes' },
-
   ];
 
   const handleNavigate = (path) => {
